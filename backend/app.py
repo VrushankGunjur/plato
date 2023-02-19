@@ -1,7 +1,7 @@
 import os
 import tempfile
 import flask
-from flask import Flask, make_response
+from flask import Flask, make_response, Response
 from flask import request
 from flask_cors import CORS
 import whisper
@@ -14,11 +14,11 @@ app = flask.Flask(__name__)
 CORS(app)
 
 cli_path = ""
-global_indx = None
-indxd = False
 files = None
+indx = None
+chatbot = None
+index_again = True
 
-@app.route('/chatgpt', methods=['POST'])
 def chatgpt(res, query):
     results = []
     for result in res.matches:
@@ -48,35 +48,22 @@ def chatgpt(res, query):
         i += 1
 
     p = "Your name is Plato and you are a pair programmer for a developer. You are assisting them with what they're struggling with. Be specific in regard to helping with code and technical assistance. Here are some samples of code that may be relevant. Only use these to help if they make sense in context of the developer's thoughts: \n" + \
-        s + "\n Talk to the developer directly. Respond to the following stream of thoughts from the developer: "
+        s + "\n Talk to the developer directly. Please limit your response to less than 50 words. Respond to the following stream of thoughts from the developer: "
     prompt = p + query
 
-    from revChatGPT.V1 import Chatbot
-    chatbot = Chatbot(config={
-        "email": "akshgarg@gmail.com",
-        "password": "treehacks"
-    })
+    prompt = query
 
-    response = ""
-
-    for data in chatbot.ask(
-    prompt
-    ):
-        response = data["message"]
-
-    return response
-
-    '''
-    print("Chatbot: ")
     prev_text = ""
+
     for data in chatbot.ask(
         prompt,
     ):
-        message = data["message"][len(prev_text):]
-        print(message, end="", flush=True)
+        message = data["message"][len(prev_text) :]
+        # print(message, end="", flush=True)
         prev_text = data["message"]
-    print()
-    '''
+        yield message
+
+    return prev_text
 
 def query_pinecone(p_indx, audio):
     MODEL = "text-embedding-ada-002"
@@ -92,34 +79,38 @@ def query_pinecone(p_indx, audio):
     res = indx.query([xq], top_k=10, include_metadata=True)
     return res
     
+def chatbot_init():
+    global chatbot
+    chatbot = Chatbot(config={
+        "email": "akshgarg@gmail.com",
+        "password": "treehacks"
+    })
 
+def pinecone_init():
+    MODEL = "text-embedding-ada-002"
 
-def index():
-    path = "codebase_files"
-    dir_list = os.listdir(path)
-    print(dir_list)
-    openai.api_key = "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"
     pinecone.init(
         api_key="8dae86ff-8f12-4f00-900d-564cef7d98cb",
         environment="us-east1-gcp"
     )
-    MODEL = "text-embedding-ada-002"
-    length = 15
-
-
-    valid_chars = string.ascii_lowercase + string.digits + '-'
-    first_char = random.choice(string.ascii_lowercase + string.digits)
-    last_char = random.choice(string.ascii_lowercase + string.digits)
-    middle_chars = ''.join(random.choice(valid_chars) for i in range(length-2))
-    # Concatenate the string
-    UID = first_char + middle_chars + last_char
+    
+    UID = 'plato'
 
     if UID not in pinecone.list_indexes():
-            dim = 0
-            res = openai.Embedding.create(input='string.py', engine=MODEL)['data'][0]['embedding']
-            pinecone.create_index(UID, dimension=len(res))
+        res = openai.Embedding.create(input='string.py', engine=MODEL)['data'][0]['embedding']
+        pinecone.create_index(UID, dimension=len(res))
         # connect to index
+    
+    global indx
     indx = pinecone.Index(UID)
+
+def index():
+    path = "/Users/akshgarg/Downloads/plato/backend/codebase_files"
+    dir_list = os.listdir(path)
+    print(dir_list)
+    openai.api_key = "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"
+    MODEL = "text-embedding-ada-002"
+    length = 15
 
     CONST_SPLIT = 50 # should scale on average size or file type
     chunk_i = 0
@@ -167,8 +158,6 @@ def index():
                 chunk = ''
     return indx
         
-
-
 @app.route('/transcribe', methods=['POST'])
 def transcribe():
     if request.method == 'POST':
@@ -190,34 +179,44 @@ def transcribe():
             result = audio_model.transcribe(save_path, language='english')
         else:
             result = audio_model.transcribe(save_path)
-
         
         audio = result['text']
+        
         if len(audio) > 1:
             # change path to cli_path instead
             path = "codebase_files"
             dir_list = os.listdir(path)
             global files
-            global indxd
-            if dir_list != files or not indxd:
-                indx = index()
-                res = query_pinecone(indx, audio)
-                out = chatgpt(res, audio)
-                indxd = True
+            if dir_list != files:
                 files = dir_list
-                global global_indx
-                global_indx = indx
-                return out
-            else:
-                indx = global_indx
-                res = query_pinecone(indx, audio)
-                out = chatgpt(res, audio)
-                return out
+                
+            print(audio)
+
+            global indx
+            if indx is None:
+                pinecone_init()
+
+            global chatbot
+            if chatbot is None:
+                chatbot_init()
+            
+            global index_again
+            if index_again:
+                indx = index()
+                index_again = False
+
+            res = query_pinecone(indx, audio)
+            
+            return Response(chatgpt(res, audio), mimetype='text/event-stream')
+            final_msg = ""
+            for text in chatgpt(res, audio):
+                final_msg += text
+                print(text, end="", flush = True)
+            
+            return final_msg
         else:
             res = 'No discernable audio captured.'
             return res
-    else:
-        return "This endpoint only processes POST wav blob"
 
 
 
