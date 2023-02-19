@@ -208,9 +208,10 @@ def transcribe():
                 index_again = False
 
             res = query_pinecone(indx, audio)
-            
-            return Response(chatgpt(res, audio), mimetype='text/event-stream')
+
+            # return Response(chatgpt(res, audio), mimetype='text/event-stream')
             final_msg = ""
+            # chatgpt is a stream, we loop over it to get every word
             for text in chatgpt(res, audio):
                 final_msg += text
                 print(text, end="", flush = True)
