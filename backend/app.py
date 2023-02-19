@@ -21,6 +21,8 @@ files = None
 indx = None
 chatbot = None
 index_again = True
+UID = 'plato'
+CONST_SPLIT = 25
 
 def chatgpt(res, query):
     print(res)
@@ -31,14 +33,24 @@ def chatgpt(res, query):
             file = matches['metadata']['file']
             chunk_i = matches['metadata']['chunk_i']
 
-            stiched = f"{file} from line {int(chunk_i*50)} to {int(chunk_i*50 + 50)} \n{''.join(text)}\n--------------\n"
+            stiched = f"{file} from line {int(chunk_i*CONST_SPLIT)} to {int(chunk_i*CONST_SPLIT + CONST_SPLIT)} \n{''.join(text)}\n--------------\n"
             contexts += stiched
 
     # p = "Your name is Plato and you are a pair programmer for a developer. You are assisting them with what they're struggling with. Be specific in regard to helping with code and technical assistance. Here are some samples of code that may be relevant. Only use these to help if they make sense in context of the developer's thoughts: \n" + \
     #     s + "\n Talk to the developer directly. Please limit your response to less than 50 words. Respond to the following stream of thoughts from the developer: "
     
-    p = f"Here are some code snippets for context: \n {contexts} \n. Not all of these are relevant though. Use the ones that have the highest relevance score. \n \
-    Use these along with your knowledge base to talk to the developer:"
+    mode = 'hint'
+    if mode == 'code':
+        p = "This is the code you should reference: \n {} \n. Not all of these are relevant though. Use the ones that have the highest relevance score. \n \
+        Use these along with your knowledge base to talk to the developer:".format(contexts)
+    elif mode == 'hint': 
+        p = "This is the code you should reference: \n {} \n. Not all of these are relevant though. Use the ones that have the highest relevance score. \n \
+        Use these along with your knowledge base to give hints to the user. Please try to avoid giving the answer:".format(contexts)
+    elif mode == 'support':
+        p = "Emulate being a friend to the user. Listen to their requests and respond in a nice and supportive way: "
+    else: 
+        p = ""
+
 
     prompt = p + query
 
@@ -88,8 +100,6 @@ def pinecone_init():
         environment="us-east1-gcp"
     )
     
-    UID = 'plato'
-
     # if starting:
     #     if UID in pinecone.list_indexes():
     #         pinecone.delete_index(UID)
@@ -107,15 +117,22 @@ def pinecone_init():
 
 def index():
     path = "/Users/akshgarg/Downloads/plato/backend/codebase_files"
+    global cli_path
+    if cli_path != "":
+        path = cli_path
+
+    print(path)
+
     dir_list = os.listdir(path)
     print(dir_list)
     openai.api_key = "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"
     MODEL = "text-embedding-ada-002"
     length = 15
 
-    CONST_SPLIT = 50 # should scale on average size or file type
-    chunk_i = 0
+    # should scale on average size or file type
     for f in dir_list:
+        chunk_i = 0
+
         if f == 'serve_files.py' or f == '.DS_Store':
             continue
         pthname = path + '/' + f
@@ -149,7 +166,7 @@ def index():
                 res = openai.Embedding.create(input=line[0], engine=MODEL)
                 embed = [(res['data'])[0]['embedding']]
                 # prep metadata and upsert batch
-                meta = [{'text': line}]
+                meta = [{'text': line, 'file': pthname, 'chunk_i': chunk_i}]
                 to_upsert = zip(id, embed, meta)
                 # upsert to Pinecone
                 print("Inserted chunk ", chunk_i)
@@ -204,6 +221,7 @@ def transcribe():
             global index_again
             if index_again:
                 indx = index()
+                print('index again')
                 index_again = False
 
             res = query_pinecone(indx, audio)
@@ -242,6 +260,13 @@ def upload_file():
 
 @app.route('/senddir', methods=['POST'])
 def get_dir():
-    data = request.get_data(as_text=True)
+    data = request.get_data(as_text=True)[1:-1]
+    global UID
+    pinecone.Index(UID).delete(deleteAll='true')
+    print(data)
+    global cli_path
     cli_path = data
+
+    global index_again
+    index_again = True
     return "received"
