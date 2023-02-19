@@ -1,7 +1,7 @@
 import os
 import tempfile
 import flask
-from flask import Flask, make_response, Response
+from flask import Flask, make_response, Response, stream_with_context
 from flask import request
 from flask_cors import CORS
 import whisper
@@ -84,7 +84,7 @@ def query_pinecone(p_indx, audio):
 def chatbot_init():
     global chatbot
     chatbot = Chatbot(config={
-        "email": "akshgarg@gmail.com",
+        "email": "packagdeal5@gmail.com",
         "password": "treehacks"
     })
 
@@ -107,7 +107,7 @@ def pinecone_init():
     indx = pinecone.Index(UID)
 
 def index():
-    path = "/Users/akshgarg/Downloads/plato/backend/codebase_files"
+    path = "/Users/vrushankgunjur/Documents/treehacks23/plato/backend/codebase_files"
     dir_list = os.listdir(path)
     print(dir_list)
     openai.api_key = "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"
@@ -209,6 +209,7 @@ def transcribe():
 
             res = query_pinecone(indx, audio)
 
+            return Response(chatgpt(res, audio), mimetype='text/event-stream')
             # return Response(chatgpt(res, audio), mimetype='text/event-stream')
             final_msg = ""
             # chatgpt is a stream, we loop over it to get every word

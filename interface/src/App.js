@@ -8,6 +8,7 @@ import TranscribeOutput from "./TranscribeOutput";
 import SettingsSections from "./SettingsSection";
 import { ReactMic } from 'react-mic';
 import axios from "axios";
+
 import { PulseLoader } from "react-spinners";
 
 const useStyles = () => ({
@@ -125,6 +126,7 @@ const App = ({ classes }) => {
 
   function onStop(recordedBlob) {
     transcribeRecording(recordedBlob)
+    console.log('transcribing is false');
     setIsTranscribing(true)
   }
 
@@ -173,21 +175,80 @@ const App = ({ classes }) => {
 
   }
 
-  function transcribeRecording(recordedBlob) {
+  async function transcribeRecording(recordedBlob) {
     const headers = {
       "content-type": "multipart/form-data",
+      "responseType": 'stream',
     };
     const formData = new FormData();
     formData.append("language", selectedLangRef.current)
     formData.append("model_size", modelOptions[selectedModelRef.current])
     formData.append("audio_data", recordedBlob.blob, 'temp_recording');
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'http://0.0.0.0:8000/transcribe');
+    xhr.withCredentials = false;
+    xhr.send(formData);
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 3 || xhr.readyState === 2) {  // check for partial response
+        const output_element = document.getElementById('output');
+        output_element.innerHTML = ""; 
+        //const data = xhr.responseText.split('\n').filter(line => line.trim() !== '');  // split the response into separate lines
+        const data = xhr.responseText;
+        for (let i = 0; i < data.length; i++) {
+          //console.log(data[i]);
+          setTranscribedData(data);
+          /*
+          var new_text = document.createTextNode(data[i]);
+          //const output_element = document.getElementById('output');
+          output_element.appendChild(new_text);
+          */
+          //const message = JSON.parse(data[i].replace('data: ', ''));  // parse each line as a JSON object
+          //console.log(data[i]);  // display the data in the console
+          // update your UI with the received data
+        }
+        console.log(data)
+      }
+      if (xhr.readyState === 4) {
+        setIsTranscribing(false);  
+      }
+    };
+
+    //setStopTranscriptionSession(false);
+    // COMMENTED LINE BELOW
+    setIsTranscribing(false);
+    //intervalRef.current = setInterval(transcribeInterim, transcribeTimeout * 1000)
+    console.log(stopTranscriptionSession);
+    console.log(isTranscribing)
+    /*
     axios.post("http://0.0.0.0:8000/transcribe", formData, { headers })
       .then((res) => {
+        // Vrushank Changes:
+        const reader = res.data.getReader();
+        // function to read and display the data
+        function readAndDisplayData() {
+          reader.read().then(({ value, done }) => {
+            // if done is true, the stream has ended
+            if (done) return;
+
+            // convert the chunk to a string and display it
+            const chunk = new TextDecoder('utf-8').decode(value);
+            const outputEl = document.getElementById('output');
+            outputEl.textContent += chunk;
+
+            // read the next chunk
+            readAndDisplayData();
+          });
+        }
+        
+        readAndDisplayData();
+        // End Vrushank Changes
         setTranscribedData(oldData => [...oldData, res.data])
         setIsTranscribing(false)
         intervalRef.current = setInterval(transcribeInterim, transcribeTimeout * 1000)
       });
-
+      */
     if (!stopTranscriptionSessionRef.current) {
       setIsRecording(true)
     }
@@ -238,6 +299,7 @@ const App = ({ classes }) => {
       <button id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
       <br></br>
 
+      <p id="output"></p>
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
       
