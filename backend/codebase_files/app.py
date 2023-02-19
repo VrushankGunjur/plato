@@ -192,16 +192,11 @@ def transcribe():
         else:
             result = audio_model.transcribe(save_path)
 
-        
         audio = result['text']
-        if len(audio) > 1:
-            indx = index()
-            res = query_pinecone(indx, audio)
-            out = chatgpt(res, audio)
-            return out
-        else:
-            res = 'No discernable audio captured.'
-            return res
+        indx = index()
+        res = query_pinecone(indx, audio)
+        out = chatgpt(res, audio)
+        return out
     else:
         return "This endpoint only processes POST wav blob"
 
