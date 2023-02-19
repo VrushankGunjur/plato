@@ -9,6 +9,8 @@ import openai
 import pinecone
 import random
 import string
+from revChatGPT.V1 import Chatbot
+
 
 app = flask.Flask(__name__)
 CORS(app)
