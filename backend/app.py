@@ -14,6 +14,9 @@ app = flask.Flask(__name__)
 CORS(app)
 
 cli_path = ""
+global_indx = None
+indxd = False
+files = None
 
 @app.route('/chatgpt', methods=['POST'])
 def chatgpt(res, query):
@@ -75,11 +78,6 @@ def chatgpt(res, query):
     print()
     '''
 
-
-
-
-
-
 def query_pinecone(p_indx, audio):
     MODEL = "text-embedding-ada-002"
     pinecone.init(
@@ -126,7 +124,7 @@ def index():
     CONST_SPLIT = 50 # should scale on average size or file type
     chunk_i = 0
     for f in dir_list:
-        if f == 'serve_files.py':
+        if f == 'serve_files.py' or f == '.DS_Store':
             continue
         pthname = path + '/' + f
         if os.path.isdir(pthname):
@@ -196,10 +194,25 @@ def transcribe():
         
         audio = result['text']
         if len(audio) > 1:
-            indx = index()
-            res = query_pinecone(indx, audio)
-            out = chatgpt(res, audio)
-            return out
+            # change path to cli_path instead
+            path = "codebase_files"
+            dir_list = os.listdir(path)
+            global files
+            global indxd
+            if dir_list != files or not indxd:
+                indx = index()
+                res = query_pinecone(indx, audio)
+                out = chatgpt(res, audio)
+                indxd = True
+                files = dir_list
+                global global_indx
+                global_indx = indx
+                return out
+            else:
+                indx = global_indx
+                res = query_pinecone(indx, audio)
+                out = chatgpt(res, audio)
+                return out
         else:
             res = 'No discernable audio captured.'
             return res

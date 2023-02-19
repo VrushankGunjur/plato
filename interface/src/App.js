@@ -212,7 +212,7 @@ const App = ({ classes }) => {
     <div className={classes.root}>
       <div className={classes.title}>
         <Typography variant="h3">
-          Whisper Playground <span role="img" aria-label="microphone-emoji">🎤</span>
+          Plato <span role="img" aria-label="microphone-emoji"></span>
         </Typography>
       </div>
       <div className={classes.settingsSection}>
