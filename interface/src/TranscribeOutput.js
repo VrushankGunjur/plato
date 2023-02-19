@@ -16,13 +16,12 @@ const useStyles = () => ({
 
 const TranscribeOutput = ({classes, transcribedText, interimTranscribedText}) => {
   if (transcribedText.length === 0 && interimTranscribedText.length === 0) {
-    return <Typography variant="body1">...</Typography>;
+    return <Typography variant="body1"></Typography>;
   }
 
   return (
     <div className={classes.root}>
       <Typography variant="body1">{transcribedText}</Typography>
-      <Typography className={classes.outputText} variant="body1">{interimTranscribedText}</Typography>
     </div>
   )
 }

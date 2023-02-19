@@ -191,15 +191,20 @@ const App = ({ classes }) => {
     xhr.send(formData);
 
     xhr.onreadystatechange = function() {
-      console.log(xhr.readyState);
+      //console.log(xhr.readyState);
       if (xhr.readyState === 3 || xhr.readyState === 4) {  // check for partial response
         const output_element = document.getElementById('output');
         output_element.innerHTML = ""; 
         //const data = xhr.responseText.split('\n').filter(line => line.trim() !== '');  // split the response into separate lines
-        const data = xhr.responseText;
-        for (let i = 0; i < data.length; i++) {
+        var data = xhr.responseText;
+        //for (let i = 0; i < data.length; i++) {
           //console.log(data[i]);
-          setTranscribedData(data);
+        data = data.replace(/\n/g, "<br>");
+        data = data.replace(/```([^`]+)```/g, '<code>$1</code>')
+        data = data.replace(/`([^`]+)`/g, '<code>$1</code>')
+        output_element.innerHTML = data.replace(/\n/g, "<br>");
+
+        //setTranscribedData(data);
           /*
           var new_text = document.createTextNode(data[i]);
           //const output_element = document.getElementById('output');
@@ -208,8 +213,9 @@ const App = ({ classes }) => {
           //const message = JSON.parse(data[i].replace('data: ', ''));  // parse each line as a JSON object
           //console.log(data[i]);  // display the data in the console
           // update your UI with the received data
-        }
-        console.log(data)
+        //}
+        //console.log(data)
+        //console.log(transcribedData)
       }
       if (xhr.readyState === 4) {
         setIsTranscribing(false);  
@@ -296,11 +302,13 @@ const App = ({ classes }) => {
         <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
         <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
       </div>
+      
+      <p id="output" style={{"border": "1px solid black"}}></p>
+      
       <input id="CLI-Directory"></input>
       <button id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
       <br></br>
 
-      <p id="output"></p>
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
       
