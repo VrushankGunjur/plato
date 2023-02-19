@@ -7,7 +7,8 @@ import "./App.css";
 import TranscribeOutput from "./TranscribeOutput";
 import SettingsSections from "./SettingsSection";
 import { ReactMic } from 'react-mic';
-import axios from "axios";
+import { IconButton } from "@material-ui/core";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { PulseLoader } from "react-spinners";
 
@@ -46,6 +47,7 @@ const App = ({ classes }) => {
   const [transcribeTimeout, setTranscribeTimout] = useState(15);
   const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);
 
+  const [akshMode, setAkshMode] = useState('');
   const intervalRef = useRef(null);
 
   const stopTranscriptionSessionRef = useRef(stopTranscriptionSession);
@@ -66,7 +68,32 @@ const App = ({ classes }) => {
     return () => clearInterval(intervalRef.current);
   }, []);
 
+  let modal = null;
+  let span = null; 
 
+  window.onload = function() {
+    modal = document.getElementById("myModal");
+
+    // Get the <span> element that closes the modal
+    span = document.getElementsByClassName("close")[0];
+  };
+  
+  // When the user clicks on the button, open the modal
+  function openModal() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  }
   function handleTranscribeTimeoutChange(newTimeout) {
     setTranscribeTimout(newTimeout)
   }
@@ -184,7 +211,7 @@ const App = ({ classes }) => {
     formData.append("language", selectedLangRef.current)
     formData.append("model_size", modelOptions[selectedModelRef.current])
     formData.append("audio_data", recordedBlob.blob, 'temp_recording');
-    
+    formData.append("akshMode", akshMode);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://0.0.0.0:8000/transcribe');
     xhr.withCredentials = false;
@@ -276,6 +303,11 @@ const App = ({ classes }) => {
     xhr.send(JSON.stringify(dir_path));
   }
 
+  function changeAksh() {
+    setAkshMode(document.getElementById("myDropdown").value);
+    console.log(akshMode);
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -303,18 +335,23 @@ const App = ({ classes }) => {
         <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
       </div>
       
-      <p id="output" style={{"border": "1px solid black"}}></p>
+      <p id="output" style={{"border": "1px solid black", "borderRadius": "15px", "padding": "5px"}}></p>
       
-      <input id="CLI-Directory"></input>
-      <button id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
+      <input className="CLI-Directory" id="CLI-Directory"></input>
+      <button className="submit-dir-cli" id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
       <br></br>
 
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
       
-      <input type="file" id="file-input" onChange={uploadCode} multiple></input>
-
-      <ul id="server_files"></ul>
+      <input className="submit-dir-cli" type="file" id="file-input" onChange={uploadCode} multiple></input>
+      <div className="Select">
+      <select id="myDropdown" onChange={changeAksh}>
+        <option value="code">Code</option>
+        <option value="hint">Hint</option>
+        <option value="friend">Friend</option>
+      </select>
+      </div>
     </div>
   );
 }
