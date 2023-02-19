@@ -86,7 +86,7 @@ def query_pinecone(p_indx, audio):
 def chatbot_init():
     global chatbot
     chatbot = Chatbot(config={
-        "email": "akshgarg@gmail.com",
+        "email": "packagdeal5@gmail.com",
         "password": "treehacks"
     })
 

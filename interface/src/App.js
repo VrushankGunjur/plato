@@ -44,6 +44,7 @@ const App = ({ classes }) => {
   const [selectedModel, setSelectedModel] = useState(1);
   const [transcribeTimeout, setTranscribeTimout] = useState(15);
   const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);
+  const [operateMode, setOperateMode] = useState('Web');
 
   const [akshMode, setAkshMode] = useState('');
   const intervalRef = useRef(null);
@@ -282,6 +283,13 @@ const App = ({ classes }) => {
     console.log(akshMode);
   }
 
+
+  function changeMode() {
+    setOperateMode(document.getElementById("modeSelector").value);
+    console.log(operateMode);
+  }
+
+  if (operateMode === "CLI") {
   return (
     <div className={classes.root}>
       <div className={classes.title}>
@@ -294,6 +302,12 @@ const App = ({ classes }) => {
           onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
           transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
       </div>
+
+      <select id="modeSelector" onChange={changeMode}>
+        <option value="Web">Web</option>
+        <option value="CLI">CLI</option>
+      </select>
+      <br></br>
       <div className={classes.buttonsSection} >
         {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
         {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
@@ -315,6 +329,52 @@ const App = ({ classes }) => {
       <button className="submit-dir-cli" id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
       <br></br>
 
+      <p>Parse Mode:</p>
+      <select id="myDropdown" onChange={changeAksh}>
+        <option value="code">Code</option>
+        <option value="hint">Hint</option>
+        <option value="friend">Friend</option>
+      </select>
+
+    </div>
+  );
+  } else {
+    return (<div className={classes.root}>
+      <div className={classes.title}>
+        <Typography variant="h3">
+          Plato <span role="img" aria-label=""></span>
+        </Typography>
+      </div>
+      <div className={classes.settingsSection}>
+        <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
+          transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
+      </div>
+
+      <select id="modeSelector" onChange={changeMode}>
+        <option value="Web">Web</option>
+        <option value="CLI">CLI</option>
+      </select>
+      <br></br>
+      <div className={classes.buttonsSection} >
+        {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
+        {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+      </div>
+
+      <div className="recordIllustration">
+        <ReactMic record={isRecording} className="sound-wave" onStop={onStop}
+          onData={onData} strokeColor="#0d6efd" backgroundColor="#f6f6ef" />
+      </div>
+
+      <div>
+        <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
+        <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
+      </div>
+      
+      <p id="output" style={{"border": "1px solid black", "borderRadius": "15px", "padding": "5px"}}></p>
+      
+      <br></br>
+
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
       <div className="Container">
@@ -327,8 +387,8 @@ const App = ({ classes }) => {
         <option value="friend">Friend</option>
       </select>
 
-    </div>
-  );
+    </div>);
+  }
 }
 
 export default withStyles(useStyles)(App);
