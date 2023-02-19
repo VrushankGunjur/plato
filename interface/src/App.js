@@ -37,16 +37,16 @@ const useStyles = () => ({
 
 const App = ({ classes }) => {
   const [transcribedData, setTranscribedData] = useState([]);
-  const [interimTranscribedData, ] = useState('');
+  const [interimTranscribedData,] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('english');
   const [selectedModel, setSelectedModel] = useState(1);
-  const [transcribeTimeout, setTranscribeTimout] = useState(5);
-  const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);  
+  const [transcribeTimeout, setTranscribeTimout] = useState(15);
+  const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);
 
   const intervalRef = useRef(null);
-  
+
   const stopTranscriptionSessionRef = useRef(stopTranscriptionSession);
   stopTranscriptionSessionRef.current = stopTranscriptionSession;
 
@@ -125,7 +125,7 @@ const App = ({ classes }) => {
 
   function onStop(recordedBlob) {
     transcribeRecording(recordedBlob)
-    setIsTranscribing(true)  
+    setIsTranscribing(true)
   }
 
   function transcribeInterim() {
@@ -187,10 +187,10 @@ const App = ({ classes }) => {
         setIsTranscribing(false)
         intervalRef.current = setInterval(transcribeInterim, transcribeTimeout * 1000)
       });
-      
-      if (!stopTranscriptionSessionRef.current){
-        setIsRecording(true)    
-      }
+
+    if (!stopTranscriptionSessionRef.current) {
+      setIsRecording(true)
+    }
   }
 
   function submitDir() {
