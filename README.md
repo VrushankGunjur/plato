@@ -3,6 +3,8 @@
   <h2 align="center">Plato</h2>
   <h6 align="center">Plato is an AI pair-programming platform powered by your voice.</h6>
 </div>
+https://devpost.com/software/plato-5f4m7c?ref_content=user-portfolio&ref_feature=in_progress
+https://www.youtube.com/watch?v=Lo3RpOQhQUE
 
 ## Inspiration
 What's the best way to get over a road block? To create new solutions? To find a bug in one's code? 
