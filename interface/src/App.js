@@ -46,7 +46,9 @@ const App = ({ classes }) => {
   const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);
   const [operateMode, setOperateMode] = useState('Web');
 
-  const [akshMode, setAkshMode] = useState('');
+  const [akshMode, setAkshMode] = useState('code');
+  const [modusOperand, setModus] = useState('code');
+
   const intervalRef = useRef(null);
 
   const stopTranscriptionSessionRef = useRef(stopTranscriptionSession);
@@ -78,43 +80,43 @@ const App = ({ classes }) => {
     setIsRecording(true)
     intervalRef.current = setInterval(transcribeInterim, transcribeTimeout * 1000)
   }
-/*
-
-// deprecated, reads files from served info
-  function report_files() {
-    const url = 'http://localhost:8003';
-      const fileNames = [];
-
-      fetch(url, {mode: 'cors'})
-        .then(response => response.text())
-        .then(data => {
-          // parse the HTML response to get the list of file names
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(data, 'text/html');
-          const links = htmlDoc.getElementsByTagName('a');
-          for (let i = 0; i < links.length; i++) {
-            const link = links[i];
-            if (link.getAttribute('href') !== '../') {
-              fileNames.push(link.textContent);
+  /*
+  
+  // deprecated, reads files from served info
+    function report_files() {
+      const url = 'http://localhost:8003';
+        const fileNames = [];
+  
+        fetch(url, {mode: 'cors'})
+          .then(response => response.text())
+          .then(data => {
+            // parse the HTML response to get the list of file names
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(data, 'text/html');
+            const links = htmlDoc.getElementsByTagName('a');
+            for (let i = 0; i < links.length; i++) {
+              const link = links[i];
+              if (link.getAttribute('href') !== '../') {
+                fileNames.push(link.textContent);
+              }
             }
-          }
-          
-          // do something with the list of file names
-          // for example, display them in a list
-          const list = document.createElement('ul');
-          for (let i = 0; i < fileNames.length; i++) {
-            const listItem = document.createElement('li');
-            listItem.textContent = fileNames[i];
-            list.appendChild(listItem);
-          }
-          document.body.appendChild(list);
-        })
-        .catch(error => {
-          console.log("file server (serve_files.py) not running");
-        });
-  }
-
-*/
+            
+            // do something with the list of file names
+            // for example, display them in a list
+            const list = document.createElement('ul');
+            for (let i = 0; i < fileNames.length; i++) {
+              const listItem = document.createElement('li');
+              listItem.textContent = fileNames[i];
+              list.appendChild(listItem);
+            }
+            document.body.appendChild(list);
+          })
+          .catch(error => {
+            console.log("file server (serve_files.py) not running");
+          });
+    }
+  
+  */
   function stopRecording() {
     clearInterval(intervalRef.current);
     setStopTranscriptionSession(true)
@@ -162,11 +164,11 @@ const App = ({ classes }) => {
     //console.log(formData.entries());
     formData.forEach(thing => {
       console.log(thing);
-    }) 
+    })
 
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://localhost:8000/upload", true);
-    xhr.onload = function() {
+    xhr.onload = function () {
       if (this.status === 200) {
         console.log("Files uploaded successfully");
       } else {
@@ -186,41 +188,41 @@ const App = ({ classes }) => {
     formData.append("language", selectedLangRef.current)
     formData.append("model_size", modelOptions[selectedModelRef.current])
     formData.append("audio_data", recordedBlob.blob, 'temp_recording');
-    formData.append("akshMode", akshMode);
+    formData.append("akshMode", document.getElementById("myDropdown").value);
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://0.0.0.0:8000/transcribe');
     xhr.withCredentials = false;
     xhr.send(formData);
 
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
       //console.log(xhr.readyState);
       if (xhr.readyState === 3 || xhr.readyState === 4) {  // check for partial response
         const output_element = document.getElementById('output');
-        output_element.innerHTML = ""; 
+        output_element.innerHTML = "";
         //const data = xhr.responseText.split('\n').filter(line => line.trim() !== '');  // split the response into separate lines
         var data = xhr.responseText;
         //for (let i = 0; i < data.length; i++) {
-          //console.log(data[i]);
+        //console.log(data[i]);
         data = data.replace(/\n/g, "<br>");
         data = data.replace(/```([^`]+)```/g, '<code>$1</code>')
         data = data.replace(/`([^`]+)`/g, '<code>$1</code>')
         output_element.innerHTML = data.replace(/\n/g, "<br>");
 
         //setTranscribedData(data);
-          /*
-          var new_text = document.createTextNode(data[i]);
-          //const output_element = document.getElementById('output');
-          output_element.appendChild(new_text);
-          */
-          //const message = JSON.parse(data[i].replace('data: ', ''));  // parse each line as a JSON object
-          //console.log(data[i]);  // display the data in the console
-          // update your UI with the received data
+        /*
+        var new_text = document.createTextNode(data[i]);
+        //const output_element = document.getElementById('output');
+        output_element.appendChild(new_text);
+        */
+        //const message = JSON.parse(data[i].replace('data: ', ''));  // parse each line as a JSON object
+        //console.log(data[i]);  // display the data in the console
+        // update your UI with the received data
         //}
         //console.log(data)
         //console.log(transcribedData)
       }
       if (xhr.readyState === 4) {
-        setIsTranscribing(false);  
+        setIsTranscribing(false);
       }
     };
 
@@ -265,10 +267,10 @@ const App = ({ classes }) => {
 
   function submitDir() {
     var dir_path = document.getElementById('CLI-Directory').value;
-    console.log(dir_path); 
+    console.log(dir_path);
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "http://0.0.0.0:8000/senddir", true);
-    xhr.onload = function() {
+    xhr.onload = function () {
       if (this.status === 200) {
         console.log("Files uploaded successfully");
       } else {
@@ -278,9 +280,11 @@ const App = ({ classes }) => {
     xhr.send(JSON.stringify(dir_path));
   }
 
-  function changeAksh() {
-    setAkshMode(document.getElementById("myDropdown").value);
-    console.log(akshMode);
+  function onChangeAksh(event) {
+    setModus(event.target.value);
+    console.log("THIS IS MODUS", modusOperand);
+    console.log("EVENT IS", event);
+    console.log("EVENT TARGET VALLUE IS", event.target.value);
   }
 
 
@@ -290,54 +294,73 @@ const App = ({ classes }) => {
   }
 
   if (operateMode === "CLI") {
-  return (
-    <div className={classes.root}>
-      <div className={classes.title}>
-        <Typography variant="h3">
-          Plato <span role="img" aria-label=""></span>
-        </Typography>
-      </div>
-      <div className={classes.settingsSection}>
-        <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
-          onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
-          transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
-      </div>
+    // function changeAksh() {
+    //   setAkshMode(document.getElementById("myDropdown").value);
+    //   console.log(1 + akshMode);
+    //   console.log(2 + document.getElementById("myDropdown").value)
+    // }
 
-      <select id="modeSelector" onChange={changeMode}>
-        <option value="Web">Web</option>
-        <option value="CLI">CLI</option>
-      </select>
-      <br></br>
-      <div className={classes.buttonsSection} >
-        {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
-        {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+    return (
+      <div className={classes.root}>
+        <div className={classes.title}>
+          <Typography variant="h3">
+            Plato <span role="img" aria-label=""></span>
+          </Typography>
+        </div>
+        <div className={classes.settingsSection}>
+          <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
+            onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
+            transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
+        </div>
+
+        <select id="modeSelector" onChange={changeMode}>
+          <option value="Web">Web</option>
+          <option value="CLI">CLI</option>
+        </select>
+        <br></br>
+        {/* <div className={classes.buttonsSection} >
+          {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
+          {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+        </div> */}
+        <div className="flex-container">
+          <div className={classes.buttonsSection} >
+            {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
+            {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+
+
+            <select id="myDropdown" onChange={(e) => onChangeAksh(e)} className="btn btn-primary" defaultValue="mode">
+              <option value="code">Code</option>
+              <option value="hint">Hint</option>
+              <option value="friend">Friend</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="recordIllustration">
+          <ReactMic record={isRecording} className="sound-wave" onStop={onStop}
+            onData={onData} strokeColor="#0d6efd" backgroundColor="#f6f6ef" />
+        </div>
+
+        <div>
+          <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
+          <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
+        </div>
+
+        <p id="output" style={{ "border": "1px solid black", "borderRadius": "15px", "padding": "2rem", "marginRight": "2rem", "marginLeft": "2rem" }}></p>
+
+        <input className="CLI-Directory" id="CLI-Directory"></input>
+        <button className="submit-dir-cli" id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
+        <br></br>
+
+        {/* <p>Parse Mode:</p>
+        <select id="myDropdown" onChange={changeAksh}>
+          <option value="code">Code</option>
+          <option value="hint">Hint</option>
+          <option value="friend">Friend</option>
+        </select> */}
+
       </div>
-
-      <div className="recordIllustration">
-        <ReactMic record={isRecording} className="sound-wave" onStop={onStop}
-          onData={onData} strokeColor="#0d6efd" backgroundColor="#f6f6ef" />
-      </div>
-
-      <div>
-        <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
-        <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
-      </div>
-      
-      <p id="output" style={{"border": "1px solid black", "borderRadius": "15px", "padding": "5px"}}></p>
-      
-      <input className="CLI-Directory" id="CLI-Directory"></input>
-      <button className="submit-dir-cli" id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
-      <br></br>
-
-      <p>Parse Mode:</p>
-      <select id="myDropdown" onChange={changeAksh}>
-        <option value="code">Code</option>
-        <option value="hint">Hint</option>
-        <option value="friend">Friend</option>
-      </select>
-
-    </div>
-  );
+    );
   } else {
     return (<div className={classes.root}>
       <div className={classes.title}>
@@ -351,14 +374,24 @@ const App = ({ classes }) => {
           transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
       </div>
 
+
       <select id="modeSelector" onChange={changeMode}>
         <option value="Web">Web</option>
         <option value="CLI">CLI</option>
       </select>
       <br></br>
-      <div className={classes.buttonsSection} >
-        {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
-        {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+      <div className="flex-container">
+        <div className={classes.buttonsSection} >
+          {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
+          {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+
+
+          <select id="myDropdown" onChange={(e) => onChangeAksh(e)} className="btn btn-primary" defaultValue="mode">
+            <option value="code">Code</option>
+            <option value="hint">Hint</option>
+            <option value="friend">Friend</option>
+          </select>
+        </div>
       </div>
 
       <div className="recordIllustration">
@@ -370,9 +403,9 @@ const App = ({ classes }) => {
         <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
         <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
       </div>
-      
-      <p id="output" style={{"border": "1px solid black", "borderRadius": "15px", "padding": "5px"}}></p>
-      
+
+      <p id="output" style={{ "border": "1px solid black", "borderRadius": "15px", "padding": "1.5rem", "marginLeft": "4rem", "marginRight": "4rem" }}></p>
+
       <br></br>
 
       <p>Uploaded Files:</p>
@@ -380,14 +413,8 @@ const App = ({ classes }) => {
       <div className="Container">
         <input className="submit-dir-cli" type="file" id="file-input" onChange={uploadCode} multiple></input>
       </div>
-      <p>Parse Mode:</p>
-      <select id="myDropdown" onChange={changeAksh}>
-        <option value="code">Code</option>
-        <option value="hint">Hint</option>
-        <option value="friend">Friend</option>
-      </select>
-
-    </div>);
+    </div>
+    );
   }
 }
 
