@@ -55,6 +55,11 @@ def chatgpt(res, query):
     prompt = p + query
 
     prompt = query
+    from revChatGPT.V1 import Chatbot
+    chatbot = Chatbot(config={
+        "email": "shraya28@gmail.com",
+        "password": "password"
+    })
 
     prev_text = ""
 
@@ -109,7 +114,7 @@ def pinecone_init():
     indx = pinecone.Index(UID)
 
 def index():
-    path = "/Users/vrushankgunjur/Documents/treehacks23/plato/backend/codebase_files"
+    path = "/Users/siddharth/Downloads/stanford-experiments/plato/backend/codebase_files"
     dir_list = os.listdir(path)
     print(dir_list)
     openai.api_key = "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"
