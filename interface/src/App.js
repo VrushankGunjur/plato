@@ -8,7 +8,18 @@ import TranscribeOutput from "./TranscribeOutput";
 import SettingsSections from "./SettingsSection";
 import { ReactMic } from 'react-mic';
 import axios from "axios";
-import { PulseLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
+import { IconButton } from "@material-ui/core";
+import { Container } from "reactstrap";
+import { TextField } from '@material-ui/core';
+import "@fontsource/poppins";
+import MicIcon from '@mui/icons-material/Mic';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
+import DirectionsIcon from '@mui/icons-material/Directions';
 
 const useStyles = () => ({
   root: {
@@ -41,8 +52,8 @@ const App = ({ classes }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState('english');
-  const [selectedModel, setSelectedModel] = useState(1);
-  const [transcribeTimeout, setTranscribeTimout] = useState(5);
+  const [selectedModel, setSelectedModel] = useState(0);
+  const [transcribeTimeout, setTranscribeTimout] = useState(10);
   const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);  
 
   const intervalRef = useRef(null);
@@ -206,44 +217,79 @@ const App = ({ classes }) => {
       }
     };
     xhr.send(JSON.stringify(dir_path));
+    console.log("HIIIIIII")
   }
 
   return (
     <div className={classes.root}>
       <div className={classes.title}>
-        <Typography variant="h3">
-          Plato <span role="img" aria-label="microphone-emoji"></span>
-        </Typography>
-      </div>
-      <div className={classes.settingsSection}>
-        <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
-          onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
-          transcribeTimeout={transcribeTimeout} onTranscribeTiemoutChanged={handleTranscribeTimeoutChange} />
-      </div>
-      <div className={classes.buttonsSection} >
-        {!isRecording && !isTranscribing && <Button onClick={startRecording} variant="primary">Start transcribing</Button>}
-        {(isRecording || isTranscribing) && <Button onClick={stopRecording} variant="danger" disabled={stopTranscriptionSessionRef.current}>Stop</Button>}
+        <div className="page-header header-filter">
+          <div className="squares square1" />
+          <div className="squares square2" />
+          <div className="squares square3" />
+          <div className="squares square4" />
+          <div className="squares square5" />
+          <div className="squares square6" />
+          <div className="squares square7" />
+        <Container>
+          <div className="content-center brand">
+            <h1 className="h1-seo">Plato</h1>
+            <h3>
+              An AI Pair-Programming Platform Powered by Your Voice.
+            </h3>
+          </div>
+        </Container>
+        </div>
       </div>
 
       <div className="recordIllustration">
         <ReactMic record={isRecording} className="sound-wave" onStop={onStop}
-          onData={onData} strokeColor="#0d6efd" backgroundColor="#f6f6ef" />
+          onData={onData} strokeColor="#0d6efd" backgroundColor="#171941" timeSlice={20}  />
       </div>
 
-      <div>
+      <div class="scroll-box">
+        <div>
+        <RingLoader sizeUnit={"px"} size={100} color="purple" loading={isTranscribing} />
+        </div>
         <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
-        <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
+      </div>
+      <div className="flex-container">
+        <div>
+          <Paper 
+            component="form"
+            sx={{ p: '2px 4px', display: 'flex', borderRadius: 15, alignItems: 'center', width: 500}}
+          >
+              <IconButton sx={{ p: '4px' }} aria-label="menu">
+              <UploadFileIcon fontSize="large"/> {/* onClick={openModal} */}
+            </IconButton>
+            <InputBase
+              sx={{ ml: 1, flex: 1 }}
+              placeholder="Type Text Here"
+            />
+            <IconButton type="button" sx={{ p: '4px' }} aria-label="Enter">
+              <KeyboardReturnIcon />
+            </IconButton>
+            <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+            <IconButton color="primary" sx={{ p: '4px' }} aria-label="Microphone">
+              <div className={classes.buttonsSection} >
+                {!isRecording && !isTranscribing && <MicIcon onClick={startRecording} fontSize="large" variant="contained" color="primary">Start transcribing</MicIcon>}
+                {(isRecording || isTranscribing) && <MicIcon onClick={stopRecording} fontSize="large" variant="danger" disabled={stopTranscriptionSessionRef.current} color="secondary">Stop</MicIcon>}
+              </div>
+            </IconButton>
+          </Paper>
+        </div>
       </div>
       <input id="CLI-Directory"></input>
       <button id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
       <br></br>
-
+      <div>
+        <p>Upload files to give the model context</p>
+        <input type="file" id="file-input" onChange={uploadCode} multiple></input>
+      </div>
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
-      
-      <input type="file" id="file-input" onChange={uploadCode} multiple></input>
-
       <ul id="server_files"></ul>
+      <br></br>
     </div>
   );
 }

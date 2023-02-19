@@ -1,8 +1,61 @@
+@font-face{
+    font-family: "Messina";
+    src: url("MessinaSans-Light.ttf") format("truetype");
+}
+
+@font-face{
+    font-family: "Apercu";
+    src: url("ApercuMedium.otf") format("truetype");
+}
+
+@font-face{
+    font-family: "Ogg";
+    src: url("Ogg-Light.ttf") format("truetype");
+}
+
 html {
+    font-family: "Ogg";
+    height: 100%;
+}
+
+.recordIllustration {
+    /* border: #212529; */
+    border: #fefefe;
+    border-width: 4px;
+    height: 108px;
+    border-style:solid;
+    border-radius: 10px;
+    z-index: 5;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-family: "Messina";
+    font-size: 6em;
+    height: 100%;
+}
+
+scroll-box {
+    font-size: "Ogg";
+}
+
+h2 {
+    font-family: "Messina";
+    height: 100%;
+}
+
+h3 {
+    font-family: "Messina";
+    height: 100%;
+}
+
+p {
+    font-family: "Messina";
     height: 100%;
 }
 
 body {
+    font-family: "Messina";
     min-height: 100%;
 }
 
@@ -13,3 +66,216 @@ body {
     flex-direction: row;
 }
 
+.flex-container {
+    display: flex;
+  }
+  
+  .flex-container > div {
+    margin: 10px;
+    padding: 20px;
+    font-size: 30px;
+  }
+
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+}
+
+#root {
+    height: 100vh;
+    background: radial-gradient(ellipse at top right, #292d61 23%, #171941 65%);
+    display: flex;
+    flex-direction: row;
+}
+
+:root {
+    --blue: #5e72e4;
+    --indigo: #5603ad;
+    --purple: #8965e0;
+    --pink: #f3a4b5;
+    --red: #f5365c;
+    --orange: #fb6340;
+    --yellow: #ffd600;
+    --green: #2dce89;
+    --teal: #11cdef;
+    --cyan: #2bffc6;
+    --white: #ffffff;
+    --gray: #6c757d;
+    --gray-dark: #32325d;
+    --light: #ced4da;
+    --lighter: #e9ecef;
+    --primary: #e14eca;
+    --secondary: #f4f5f7;
+    --success: #00f2c3;
+    --info: #1d8cf8;
+    --warning: #ff8d72;
+    --danger: #fd5d93;
+    --light: #adb5bd;
+    --dark: #212529;
+    --default: #344675;
+    --white: #ffffff;
+    --neutral: #ffffff;
+    --darker: black;
+    --breakpoint-xs: 0;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+      "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+  }
+
+  body {
+    margin-top: 20;
+    font-family: "Poppins";
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: capitalize;
+    text-align: left;
+    background-color: #171941;
+  }
+  
+  .h3 {
+    margin: 0;
+    font-family: "Poppins";
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: #525f7f;
+    text-align: left;
+  }
+
+  .outputText-Text {
+    margin-left: '8px';
+    color: #525f7f;
+  }
+
+  /* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content/Box */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be more or less, depending on screen size */
+  }
+  
+  /* The Close Button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .squares.square1 {
+    -webkit-animation: move-left-right 4s infinite;
+    animation: move-left-right 4s infinite;
+    height: 300px;
+    width: 300px;
+    opacity: .5;
+    left: 3%;
+    top: -21%;
+}
+.squares {
+    animation: move-left-right 1s infinite;
+    background: #ba54f5;
+    background: -webkit-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
+    background: -o-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
+    background: -moz-linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
+    background: linear-gradient(0deg, #ba54f5 0%, #e14eca 100%);
+    position: absolute;
+    transition: 0.5s ease-out;
+    overflow: hidden;
+    border-radius: 20%;
+    z-index: 0;
+  }
+
+  .squares.square2 {
+    animation: move-left-right 6s infinite;
+    height: 400px;
+    width: 400px;
+    opacity: 0.4;
+    right: -5%;
+    top: -12%;
+  }
+
+  .squares.square3 {
+    animation: move-left-right 5s infinite;
+    height: 200px;
+    width: 200px;
+    opacity: 0.1;
+    left: -5%;
+    bottom: 0%;
+  }
+  .squares.square4 {
+    animation: move-left-right 10s infinite;
+    height: 100px;
+    width: 100px;
+    opacity: 0.7;
+    right: 21%;
+    top: 67%;
+  }
+  .squares.square5 {
+    animation: move-left-right 4s infinite;
+    height: 170px;
+    width: 170px;
+    opacity: 0.3;
+    left: 14%;
+    bottom: 16%;
+  }
+  .squares.square6 {
+    animation: move-left-right 7s infinite;
+    left: 10%;
+    top: 35%;
+    height: 80px;
+    width: 80px;
+    opacity: 0.8;
+  }
+  .squares.square7 {
+    animation: move-left-right 2s infinite;
+    width: 300px;
+    height: 300px;
+    right: -5%;
+    bottom: 0%;
+    opacity: 0.1;
+  }
+
+  .scroll-box {
+    background: #f4f4f4;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 25px;
+    min-height: 300px;
+    height: 400px; /* maximum height of the box, feel free to change this! */
+    width: 500px;
+    padding: 15px;
+    overflow-y: scroll;
+    }

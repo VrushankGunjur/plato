@@ -53,7 +53,7 @@ def chatgpt(res, query):
 
     from revChatGPT.V1 import Chatbot
     chatbot = Chatbot(config={
-        "email": "akshgarg@gmail.com",
+        "email": "packagdeal5@gmail.com",
         "password": "treehacks"
     })
 
