@@ -131,7 +131,7 @@ def pinecone_init():
     indx = pinecone.Index(UID)
 
 def index():
-    path = "/Users/siddharth/Downloads/stanford-experiments/plato/backend/codebase_files"
+    path = "/Users/vrushankgunjur/Documents/treehacks23-demo/plato/backend/codebase_files"
     global cli_path
     if cli_path != "":
         path = cli_path
