@@ -8,6 +8,7 @@ import TranscribeOutput from "./TranscribeOutput";
 import SettingsSections from "./SettingsSection";
 import { ReactMic } from 'react-mic';
 import axios from "axios";
+import myImage from './plato2.jpeg';
 
 import { PulseLoader } from "react-spinners";
 
@@ -280,9 +281,15 @@ const App = ({ classes }) => {
     <div className={classes.root}>
       <div className={classes.title}>
         <Typography variant="h3">
-          Plato <span role="img" aria-label="microphone-emoji"></span>
+          Plato &#128302;<span role="img" aria-label="microphone-emoji"></span>
         </Typography>
       </div>
+
+    <div>
+      <img src={myImage} alt="My Image" />
+    </div>
+
+export default ImageComponent;
       <div className={classes.settingsSection}>
         <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
           onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
