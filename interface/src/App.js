@@ -367,7 +367,7 @@ const App = ({ classes }) => {
   } else {
     return (<div className={classes.root}>
       <div>
-      <img src={require('./plato-fin.png')} width="580" height="233" />
+      <img src={require('./plato-fin.png')} width="464" height="186" />
       </div>
        
       {/* <div className={classes.title}>

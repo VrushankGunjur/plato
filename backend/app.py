@@ -8,6 +8,7 @@ import whisper
 import openai
 import pinecone
 import random
+import requests
 import string
 from revChatGPT.V1 import Chatbot
 
@@ -22,6 +23,7 @@ indx = None
 chatbot = None
 index_again = True
 DEFAULT_MODE = 'friend'
+mode = DEFAULT_MODE
 workingMode = 'CLI'
 UID = 'plato'
 CONST_SPLIT = 25
@@ -45,7 +47,7 @@ def chatgpt(res, query):
     if mode != 'code' and mode != 'hint' and mode != 'friend':
         mode = DEFAULT_MODE
 
-    print(f"mode: {mode}")
+    #print(f"mode: {mode}")
     if mode == 'code':
         p = "This is the code you should reference: \n {} \n. Not all of these are relevant though. Use the ones that have the highest relevance score. \n \
         Use these along with your knowledge base to talk to the developer:".format(contexts)
@@ -85,17 +87,24 @@ def query_pinecone(p_indx, audio):
     )
     indx = p_indx
     query = audio
-    openai.api_key = "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"
-    xq = openai.Embedding.create(input=query, engine=MODEL)[
-        'data'][0]['embedding']
+    my_headers = {
+    'Content-Type' : 'application/json',
+    'Authorization' : 'Bearer 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',
+    }
+    request_body = {
+        "model": "text-embedding-ada-002",
+        "input": query
+    }
+    response = requests.post('https://api.openai.com/v1/embeddings', headers=my_headers, json=request_body)
+    xq = response.json()['data'][0]['embedding']
     res = indx.query([xq], top_k=3, include_metadata=True)
     return res
     
 def chatbot_init():
     global chatbot
     chatbot = Chatbot(config={
-        "email": "shraya28@gmail.com",
-        "password": "password"
+        "email": "akshgarg@gmail.com",
+        "password": "treehacks"
     })
 
 def pinecone_init():
