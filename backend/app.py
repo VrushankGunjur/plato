@@ -13,6 +13,7 @@ from revChatGPT.V1 import Chatbot
 
 
 app = flask.Flask(__name__)
+app.config['wsgi.buffer_size'] = 10240
 CORS(app)
 
 cli_path = ""
@@ -65,6 +66,7 @@ def chatgpt(res, query):
         prev_text = data["message"]
         yield message
 
+
     return prev_text
 
 def query_pinecone(p_indx, audio):
@@ -84,7 +86,7 @@ def query_pinecone(p_indx, audio):
 def chatbot_init():
     global chatbot
     chatbot = Chatbot(config={
-        "email": "packagdeal5@gmail.com",
+        "email": "akshgarg@gmail.com",
         "password": "treehacks"
     })
 

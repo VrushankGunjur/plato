@@ -191,7 +191,8 @@ const App = ({ classes }) => {
     xhr.send(formData);
 
     xhr.onreadystatechange = function() {
-      if (xhr.readyState === 3 || xhr.readyState === 2) {  // check for partial response
+      console.log(xhr.readyState);
+      if (xhr.readyState === 3 || xhr.readyState === 4) {  // check for partial response
         const output_element = document.getElementById('output');
         output_element.innerHTML = ""; 
         //const data = xhr.responseText.split('\n').filter(line => line.trim() !== '');  // split the response into separate lines
