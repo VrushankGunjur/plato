@@ -13,6 +13,7 @@ import string
 app = flask.Flask(__name__)
 CORS(app)
 
+cli_path = ""
 
 @app.route('/chatgpt', methods=['POST'])
 def chatgpt(res, query):
@@ -222,4 +223,8 @@ def upload_file():
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     return response
 
-
+@app.route('/senddir', methods=['POST'])
+def get_dir():
+    data = request.get_data(as_text=True)
+    cli_path = data
+    return "received"

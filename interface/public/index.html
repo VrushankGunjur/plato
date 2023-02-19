@@ -18,6 +18,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Whisper Playground</title>
   </head>
   <body>
@@ -31,34 +32,5 @@
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
     -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-      function uploadCode() {
-        $(document).ready(function() {
-          var file = $('#file-input').prop('files')[0];
-          var formData = new FormData();
-          var ctr = 0;
-          Array.from($('#file-input').prop('files')).forEach(file => {
-            formData.append('file', file)
-          })
-          {/*
-          for (const value of formData.values()) {
-            console.log(value);
-          }
-          formData.append('file', file);*/}
-          $.ajax({
-            url: 'http://127.0.0.1:8000/upload',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-              $('#result').text(response);
-            }
-          });
-      });
-      }
-    </script>
-    <input type="file" id="file-input" onchange="uploadCode()" multiple>
   </body>
 </html>

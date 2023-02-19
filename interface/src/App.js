@@ -60,6 +60,7 @@ const App = ({ classes }) => {
 
   const modelOptions = ['tiny', 'base', 'small', 'medium', 'large', 'large-v1']
 
+  var uploaded_files = []
   useEffect(() => {
     return () => clearInterval(intervalRef.current);
   }, []);
@@ -74,7 +75,43 @@ const App = ({ classes }) => {
     setIsRecording(true)
     intervalRef.current = setInterval(transcribeInterim, transcribeTimeout * 1000)
   }
+/*
 
+// deprecated, reads files from served info
+  function report_files() {
+    const url = 'http://localhost:8003';
+      const fileNames = [];
+
+      fetch(url, {mode: 'cors'})
+        .then(response => response.text())
+        .then(data => {
+          // parse the HTML response to get the list of file names
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(data, 'text/html');
+          const links = htmlDoc.getElementsByTagName('a');
+          for (let i = 0; i < links.length; i++) {
+            const link = links[i];
+            if (link.getAttribute('href') !== '../') {
+              fileNames.push(link.textContent);
+            }
+          }
+          
+          // do something with the list of file names
+          // for example, display them in a list
+          const list = document.createElement('ul');
+          for (let i = 0; i < fileNames.length; i++) {
+            const listItem = document.createElement('li');
+            listItem.textContent = fileNames[i];
+            list.appendChild(listItem);
+          }
+          document.body.appendChild(list);
+        })
+        .catch(error => {
+          console.log("file server (serve_files.py) not running");
+        });
+  }
+
+*/
   function stopRecording() {
     clearInterval(intervalRef.current);
     setStopTranscriptionSession(true)
@@ -96,6 +133,46 @@ const App = ({ classes }) => {
     setIsRecording(false)
   }
 
+  function uploadCode() {
+    var finput = document.getElementById('file-input');
+    var upload_list = document.getElementById('uploaded-file-list');
+    //finput = finput.value;
+    //console.log(finput.files)
+    var formData = new FormData();
+
+    /*
+      In reality, we want to reflect the state of the codebase_files
+      directory here, so we need to fetch from the server to display
+      the files that exist, using an interval to refresh these files.
+    */
+    Array.from(finput.files).forEach(file => {
+      if (!uploaded_files.includes(file.name)) {
+        var newFileItem = document.createElement("li");
+        newFileItem.textContent = file.name;
+        upload_list.appendChild(newFileItem);
+        formData.append('file', file)
+        uploaded_files.push(file.name);
+      }
+    });
+
+    //console.log(formData.entries());
+    formData.forEach(thing => {
+      console.log(thing);
+    }) 
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://localhost:8000/upload", true);
+    xhr.onload = function() {
+      if (this.status === 200) {
+        console.log("Files uploaded successfully");
+      } else {
+        console.error("Error uploading files");
+      }
+    };
+    xhr.send(formData);
+
+  }
+
   function transcribeRecording(recordedBlob) {
     const headers = {
       "content-type": "multipart/form-data",
@@ -114,6 +191,21 @@ const App = ({ classes }) => {
       if (!stopTranscriptionSessionRef.current){
         setIsRecording(true)    
       }
+  }
+
+  function submitDir() {
+    var dir_path = document.getElementById('CLI-Directory').value;
+    console.log(dir_path); 
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "http://0.0.0.0:8000/senddir", true);
+    xhr.onload = function() {
+      if (this.status === 200) {
+        console.log("Files uploaded successfully");
+      } else {
+        console.error("Error uploading files");
+      }
+    };
+    xhr.send(JSON.stringify(dir_path));
   }
 
   return (
@@ -142,6 +234,16 @@ const App = ({ classes }) => {
         <TranscribeOutput transcribedText={transcribedData} interimTranscribedText={interimTranscribedData} />
         <PulseLoader sizeUnit={"px"} size={20} color="purple" loading={isTranscribing} />
       </div>
+      <input id="CLI-Directory"></input>
+      <button id="submit-dir-cli" onClick={submitDir}>CLI Only: Submit Directory Path</button>
+      <br></br>
+
+      <p>Uploaded Files:</p>
+      <ul id="uploaded-file-list"></ul>
+      
+      <input type="file" id="file-input" onChange={uploadCode} multiple></input>
+
+      <ul id="server_files"></ul>
     </div>
   );
 }
