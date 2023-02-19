@@ -7,8 +7,6 @@ import "./App.css";
 import TranscribeOutput from "./TranscribeOutput";
 import SettingsSections from "./SettingsSection";
 import { ReactMic } from 'react-mic';
-import { IconButton } from "@material-ui/core";
-import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 import { PulseLoader } from "react-spinners";
 
@@ -68,32 +66,8 @@ const App = ({ classes }) => {
     return () => clearInterval(intervalRef.current);
   }, []);
 
-  let modal = null;
-  let span = null; 
 
-  window.onload = function() {
-    modal = document.getElementById("myModal");
 
-    // Get the <span> element that closes the modal
-    span = document.getElementsByClassName("close")[0];
-  };
-  
-  // When the user clicks on the button, open the modal
-  function openModal() {
-    modal.style.display = "block";
-  }
-
-  // When the user clicks on <span> (x), close the modal
-  function closeModal() {
-    modal.style.display = "none";
-  }
-
-  // When the user clicks anywhere outside of the modal, close it
-  window.onclick = function(event) {
-    if (event.target === modal) {
-      closeModal();
-    }
-  }
   function handleTranscribeTimeoutChange(newTimeout) {
     setTranscribeTimout(newTimeout)
   }
@@ -312,7 +286,7 @@ const App = ({ classes }) => {
     <div className={classes.root}>
       <div className={classes.title}>
         <Typography variant="h3">
-          Plato <span role="img" aria-label="microphone-emoji"></span>
+          Plato <span role="img" aria-label=""></span>
         </Typography>
       </div>
       <div className={classes.settingsSection}>
@@ -343,15 +317,16 @@ const App = ({ classes }) => {
 
       <p>Uploaded Files:</p>
       <ul id="uploaded-file-list"></ul>
-      
-      <input className="submit-dir-cli" type="file" id="file-input" onChange={uploadCode} multiple></input>
-      <div className="Select">
+      <div className="Container">
+        <input className="submit-dir-cli" type="file" id="file-input" onChange={uploadCode} multiple></input>
+      </div>
+      <p>Parse Mode:</p>
       <select id="myDropdown" onChange={changeAksh}>
         <option value="code">Code</option>
         <option value="hint">Hint</option>
         <option value="friend">Friend</option>
       </select>
-      </div>
+
     </div>
   );
 }

@@ -5,6 +5,7 @@
     border: none;
     border-radius: 3px;
     margin-bottom: 10px;
+
   }
   .CLI-Directory {
     padding: 5px;
@@ -24,6 +25,10 @@
     line-height: inherit;
   }
 
+.Container {
+    margin-left: auto;
+    margin-right: auto;
+}
 
 html {
     height: 100%;
