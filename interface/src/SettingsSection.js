@@ -15,7 +15,7 @@ const SettingsSections = ({ disabled, possibleLanguages, selectedLanguage, onLan
 
   return (
     <div className="Container">
-      <p>An AI Pair-Programming Platform Powered by Your Voice</p>
+      <h4>An AI Pair-Programming Platform Powered by Your Voice</h4>
     </div>
   )
 }

@@ -21,8 +21,7 @@ files = None
 indx = None
 chatbot = None
 index_again = True
-DEFAULT_MODE = 'friend'
-workingMode = 'CLI'
+mode = 'code'
 UID = 'plato'
 CONST_SPLIT = 25
 
@@ -43,7 +42,7 @@ def chatgpt(res, query):
     
     global mode
     if mode != 'code' and mode != 'hint' and mode != 'friend':
-        mode = DEFAULT_MODE
+        mode = 'code'
 
     print(f"mode: {mode}")
     if mode == 'code':
@@ -52,7 +51,7 @@ def chatgpt(res, query):
     elif mode == 'hint': 
         p = "This is the code you should reference: \n {} \n. Not all of these are relevant though. Use the ones that have the highest relevance score. \n \
         Use these along with your knowledge base to give hints to the user. Please try to avoid giving the answer:".format(contexts)
-    elif mode == 'friend':
+    elif mode == 'support':
         p = "Emulate being a friend to the user. Listen to their requests and respond in a nice and supportive way: "
     else: 
         p = ""
@@ -122,7 +121,7 @@ def pinecone_init():
     indx = pinecone.Index(UID)
 
 def index():
-    path = "/Users/siddharth/Downloads/stanford-experiments/plato/backend/codebase_files"
+    path = "/Users/akshgarg/Downloads/plato/backend/codebase_files"
     global cli_path
     if cli_path != "":
         path = cli_path
@@ -194,13 +193,6 @@ def transcribe():
         mode = request.form['akshMode']
         print('------------------------------------------')
         print(f"mode = {mode}")
-
-        global workingMode
-        workingMode = request.form['modeSelector']
-        print(workingMode)
-        if workingMode == "Web":
-            global cli_path
-            cli_path = ""
 
         # request.form['operateMode']
 
@@ -291,4 +283,4 @@ def get_dir():
 
     global index_again
     index_again = True
-    return 'received'
+    return "received"

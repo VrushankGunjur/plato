@@ -46,8 +46,8 @@ const App = ({ classes }) => {
   const [stopTranscriptionSession, setStopTranscriptionSession] = useState(false);
   const [operateMode, setOperateMode] = useState('Web');
 
-  const [akshMode, setAkshMode] = useState('code');
-  const [modusOperand, setModus] = useState('code');
+  const [akshMode, setAkshMode] = useState('friend');
+  const [modusOperand, setModus] = useState('friend');
 
   const intervalRef = useRef(null);
 
@@ -189,6 +189,7 @@ const App = ({ classes }) => {
     formData.append("model_size", modelOptions[selectedModelRef.current])
     formData.append("audio_data", recordedBlob.blob, 'temp_recording');
     formData.append("akshMode", document.getElementById("myDropdown").value);
+    formData.append("modeSelector", document.getElementById("modeSelector").value)
     const xhr = new XMLHttpRequest();
     xhr.open('POST', 'http://0.0.0.0:8000/transcribe');
     xhr.withCredentials = false;
@@ -329,9 +330,11 @@ const App = ({ classes }) => {
 
 
             <select id="myDropdown" onChange={(e) => onChangeAksh(e)} className="btn btn-primary" defaultValue="mode">
+            
+              <option value="friend">Friend</option>
+              
               <option value="code">Code</option>
               <option value="hint">Hint</option>
-              <option value="friend">Friend</option>
             </select>
           </div>
         </div>
@@ -363,11 +366,15 @@ const App = ({ classes }) => {
     );
   } else {
     return (<div className={classes.root}>
-      <div className={classes.title}>
+      <div>
+      <img src={require('./plato-fin.png')} width="580" height="233" />
+      </div>
+       
+      {/* <div className={classes.title}>
         <Typography variant="h3">
           Plato <span role="img" aria-label=""></span>
         </Typography>
-      </div>
+      </div> */}
       <div className={classes.settingsSection}>
         <SettingsSections disabled={isTranscribing || isRecording} possibleLanguages={supportedLanguages} selectedLanguage={selectedLanguage}
           onLanguageChange={setSelectedLanguage} modelOptions={modelOptions} selectedModel={selectedModel} onModelChange={setSelectedModel}
@@ -396,7 +403,7 @@ const App = ({ classes }) => {
 
       <div className="recordIllustration">
         <ReactMic record={isRecording} className="sound-wave" onStop={onStop}
-          onData={onData} strokeColor="#0d6efd" backgroundColor="#f6f6ef" />
+          onData={onData} strokeColor="#0d6efd" backgroundColor="rgb(255, 254, 236)" />
       </div>
 
       <div>
