@@ -182,6 +182,8 @@ def transcribe():
         language = request.form['language']
         model = request.form['model_size']
 
+        aksh_mode = request.form['akshMode']
+        
         # there are no english models for large
         if model != 'large' and language == 'english':
             model = model + '.en'
