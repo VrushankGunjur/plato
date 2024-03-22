@@ -29,5 +29,3 @@ I think the biggest takeaway for our team was just learning all the infra relate
 
 ## What's next for Plato
 With a robust pipeline of audio to context dependent conversation, Plato has copious applications: Plato's robust code generation, interpretation, and advice capabilities make it perfect for speeding up Software Engineers' productivity. With 29 million Software Engineers worldwide, a projected 22% growth rate of SWEs from 2020 to 2030, and SWEs spending more than 50% of their time looking at a code editor, Plato's AI framework has vast potential to improve the Software Development lifecycle. In addition to expanding Plato to an AI Visual Studio-esque text editing tool, we are thrilled to see how its hints and learning features allow for advances in Education. In a world where even middle school children are learning how to code, its shocking how unaccessible personalized guidance and feedback is on one's code. Simply put, we are determined to fill in this gap.
-
-Copyright Plato 2023-2024
